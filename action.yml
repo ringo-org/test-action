@@ -1,5 +1,5 @@
 name: Code Quality
-description: Run Node.js dependency installation and lint checks.
+description: Run Node.js lint checks with the action-owned ESLint setup.
 
 runs:
   using: composite
@@ -14,8 +14,8 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: npm ci
+      run: npm ci --prefix "$GITHUB_ACTION_PATH"
 
     - name: Run lint
       shell: bash
-      run: npm run lint --if-present
+      run: '"$GITHUB_ACTION_PATH/node_modules/.bin/eslint" . --config "$GITHUB_ACTION_PATH/eslint.config.mjs"'
