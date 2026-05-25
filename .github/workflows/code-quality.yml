@@ -1,0 +1,55 @@
+name: Code Quality
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v6
+
+      - name: Checkout quality tools
+        uses: actions/checkout@v6
+        with:
+          repository: ringo-org/test-action
+          ref: ${{ github.workflow_sha }}
+          path: .code-quality-action
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Install quality dependencies
+        run: npm ci --prefix .code-quality-action
+
+      - name: Resolve ESLint binary
+        id: eslint-binary
+        run: |
+          if [ -x "./node_modules/.bin/eslint" ]; then
+            echo "path=./node_modules/.bin/eslint" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=.code-quality-action/node_modules/.bin/eslint" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve ESLint config
+        id: eslint-config
+        run: |
+          if [ -f "eslint.config.js" ]; then
+            echo "path=eslint.config.js" >> "$GITHUB_OUTPUT"
+          elif [ -f "eslint.config.mjs" ]; then
+            echo "path=eslint.config.mjs" >> "$GITHUB_OUTPUT"
+          elif [ -f "eslint.config.cjs" ]; then
+            echo "path=eslint.config.cjs" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=.code-quality-action/eslint.config.mjs" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run lint
+        run: '"${{ steps.eslint-binary.outputs.path }}" . --config "${{ steps.eslint-config.outputs.path }}" --ignore-pattern ".code-quality-action/**"'
