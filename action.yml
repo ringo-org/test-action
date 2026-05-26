@@ -14,7 +14,9 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: npm ci --prefix "$GITHUB_ACTION_PATH"
+      run: |
+        npm ci --prefix "$GITHUB_ACTION_PATH"
+        echo "$GITHUB_ACTION_PATH/node_modules/.bin" >> "$GITHUB_PATH"
 
     - name: Check ESLint
       uses: reviewdog/action-eslint@v1
