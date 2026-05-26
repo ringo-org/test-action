@@ -12,6 +12,10 @@ runs:
       with:
         node-version: 20
 
+    - name: Install dependencies
+      shell: bash
+      run: npm ci --prefix "$GITHUB_ACTION_PATH"
+
     - name: Check ESLint
       uses: reviewdog/action-eslint@v1
       with:
