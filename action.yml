@@ -25,4 +25,4 @@ runs:
         filter_mode: added
         fail_level: error
         workdir: .
-        eslint_flags: '. --config "$GITHUB_ACTION_PATH/eslint.config.mjs"'
+        eslint_flags: '. --config "${{ github.action_path }}/eslint.config.mjs"'
